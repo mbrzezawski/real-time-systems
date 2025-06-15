@@ -1,0 +1,65 @@
+package Elevator_System
+public
+    with Elevator_Hardware;
+    with Elevator_Software;
+------------------------------------------------------------------
+--  System type ---------------------------------------------------
+------------------------------------------------------------------
+system Elevator
+    modes
+        Normal  : initial mode;
+        Service : mode;
+end Elevator;
+
+------------------------------------------------------------------
+--  System implementation ----------------------------------------
+------------------------------------------------------------------
+system implementation Elevator.impl
+    subcomponents
+        cpu         : processor Elevator_Hardware::Central_CPU.impl;
+        shaft_bus   : bus       Elevator_Hardware::Control_Bus.impl;
+
+        ctrl        : process   Elevator_Software::Elevator_Controller.impl;
+
+        cabin_panel : device Elevator_Hardware::Cabin_Panel.impl;
+        floor_p0    : device Elevator_Hardware::Floor_Panel.impl;  -- parter
+        floor_p1    : device Elevator_Hardware::Floor_Panel.impl;  -- I piętro
+        rfid_reader : device Elevator_Hardware::RFID_Reader.impl;
+        door_sensor : device Elevator_Hardware::Door_Sensor.impl;
+        
+
+    connections
+        -- fizyczne bus‑access
+        B0 : bus access cpu.bus_access        <-> shaft_bus;
+        B1 : bus access cabin_panel.bus_access <-> shaft_bus;
+        B2 : bus access floor_p0.bus_access   <-> shaft_bus;
+        B3 : bus access floor_p1.bus_access   <-> shaft_bus;
+        B4 : bus access rfid_reader.bus_access <-> shaft_bus;
+        B5 : bus access door_sensor.bus_access <-> shaft_bus;
+
+        -- logiczne porty
+        P1  : port cabin_panel.floor_request -> ctrl.cabin_req;
+
+        UP0   : port floor_p0.up_call   -> ctrl.floor_up;
+        DOWN0 : port floor_p0.down_call -> ctrl.floor_down;
+
+        UP1   : port floor_p1.up_call   -> ctrl.floor_up;
+        DOWN1 : port floor_p1.down_call -> ctrl.floor_down;
+
+        P4 : port rfid_reader.user_id -> ctrl.user_id;
+        
+		D1 : port door_sensor.door_closed -> ctrl.door_closed;
+        
+
+    properties
+        Actual_Processor_Binding => (reference (cpu)) applies to ctrl;
+
+        Actual_Connection_Binding =>
+            (reference (shaft_bus)) applies to
+                -- bus-accessy
+                B0, B1, B2, B3, B4, B5,
+                -- porty
+                P1, UP0, DOWN0, UP1, DOWN1, P4, D1;
+end Elevator.impl;
+
+end Elevator_System;

@@ -1,0 +1,74 @@
+package Elevator_Hardware
+public
+    with SEI;
+    with Base_Types;
+
+    ----------------------------------------------------------------
+    --  Central Processing Unit
+    ----------------------------------------------------------------
+    processor Central_CPU
+        features
+            bus_access : requires bus access Control_Bus;
+    end Central_CPU;
+
+    processor implementation Central_CPU.impl
+        properties
+            SEI::MIPSCapacity => 200.0 MIPS;
+            SEI::GrossWeight  => 0.05kg;
+    end Central_CPU.impl;
+
+    ----------------------------------------------------------------
+    --  Shaft Control Network (wired CAN-like)
+    ----------------------------------------------------------------
+    bus Control_Bus
+        properties
+            SEI::BandWidthCapacity => 1000.0 Mbps;
+            SEI::GrossWeight       => 0.10kg;
+    end Control_Bus;
+
+    bus implementation Control_Bus.impl
+    end Control_Bus.impl;
+
+    ----------------------------------------------------------------
+    --  Device definitions
+    ----------------------------------------------------------------
+    device Cabin_Panel
+        features
+            bus_access    : requires bus access Control_Bus;
+            floor_request : out data port Base_Types::Unsigned_8;
+    end Cabin_Panel;
+
+    device implementation Cabin_Panel.impl
+    end Cabin_Panel.impl;
+
+    device Floor_Panel
+        features
+            bus_access : requires bus access Control_Bus;
+            up_call    : out event port;
+            down_call  : out event port;
+    end Floor_Panel;
+
+    device implementation Floor_Panel.impl
+    end Floor_Panel.impl;
+
+    device RFID_Reader
+        features
+            bus_access : requires bus access Control_Bus;
+            user_id    : out data port Base_Types::Unsigned_32;
+    end RFID_Reader;
+
+    device implementation RFID_Reader.impl
+    end RFID_Reader.impl;
+    
+    device Door_Sensor
+    features
+        door_closed : out event port;                -- sygnał „drzwi zamknięte”
+        bus_access  : requires bus access Control_Bus;
+	end Door_Sensor;
+
+	device implementation Door_Sensor.impl
+	end Door_Sensor.impl;
+
+end Elevator_Hardware;
+
+

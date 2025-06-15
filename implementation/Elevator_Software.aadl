@@ -1,0 +1,106 @@
+package Elevator_Software
+public
+    with Base_Types;
+    ------------------------------------------------------------
+    --  Top-level process that coordinates the whole elevator  --
+    ------------------------------------------------------------
+    process Elevator_Controller
+        features
+            cabin_req  : in  data  port Base_Types::Unsigned_8;
+            floor_up   : in  event port;
+            floor_down : in  event port;
+            user_id    : in  data  port Base_Types::Unsigned_32;
+            door_closed: in event port;
+            
+    end Elevator_Controller;
+
+    process implementation Elevator_Controller.impl
+        subcomponents
+            Auth_Thread   : thread Auth_T.impl;
+            Call_Thread   : thread Call_T.impl;
+            Motor_Thread  : thread Motor_T.impl;
+            Logger_Thread : thread Logger_T.impl;
+            Safety_Thread : thread Safety_T.impl;
+
+        connections
+            C1: port cabin_req  -> Call_Thread.cabin_req;
+            C2: port floor_up   -> Call_Thread.floor_up;
+            C3: port floor_down -> Call_Thread.floor_down;
+            C4: port user_id    -> Auth_Thread.user_id;
+            C5: port door_closed -> Auth_Thread.door_closed;
+            
+    end Elevator_Controller.impl;
+
+    ------------------------------------------------------------
+    --  Threads (types + minimal impls) ------------------------
+    ------------------------------------------------------------
+    thread Auth_T
+        features
+            user_id      : in  data port Base_Types::Unsigned_32;
+            door_closed  : in  event port;
+            auth_status  : out data port Base_Types::Boolean;
+            
+    end Auth_T;
+
+    thread implementation Auth_T.impl
+        properties
+            Dispatch_Protocol => Periodic;
+            Period            => 50 ms;
+            Priority          => 10;
+    end Auth_T.impl;
+
+    ----------------------------------------------------------------
+    thread Call_T
+        features
+            cabin_req      : in  data  port Base_Types::Unsigned_8;
+            floor_up       : in  event port;
+            floor_down     : in  event port;
+            authorised_fl  : out data  port Base_Types::Unsigned_8;
+    end Call_T;
+
+    thread implementation Call_T.impl
+        properties
+            Dispatch_Protocol => Periodic;
+            Period            => 50 ms;
+            Priority          => 9;
+    end Call_T.impl;
+
+    ----------------------------------------------------------------
+    thread Motor_T
+        features
+            target_floor : in data port Base_Types::Unsigned_8;
+    end Motor_T;
+
+    thread implementation Motor_T.impl
+        properties
+            Dispatch_Protocol => Sporadic;
+            Period            => 10 ms;
+            Priority          => 8;
+    end Motor_T.impl;
+
+    ----------------------------------------------------------------
+    thread Logger_T
+        features
+            log_entry : in data port Base_Types::Unsigned_8;
+    end Logger_T;
+
+    thread implementation Logger_T.impl
+        properties
+            Dispatch_Protocol => Periodic;
+            Period            => 100 ms;
+            Priority          => 6;
+    end Logger_T.impl;
+
+    ----------------------------------------------------------------
+    thread Safety_T
+        features
+            alarm : in event port;
+    end Safety_T;
+
+    thread implementation Safety_T.impl
+        properties
+            Dispatch_Protocol => Sporadic;
+            Priority          => 15;
+    end Safety_T.impl;
+
+end Elevator_Software;
