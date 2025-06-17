@@ -56,7 +56,7 @@ Najważniejsze wymagania funkcjonalne i sposób ich realizacji:
 
 ## 5. Implementacja systemu
 
-![Instancja systemu](/diagrams/Elevator_Impl.png)
+![Instancja systemu](/diagrams/Elevator_Impl_DIagram.png)
 
 *Widok instancji `Elevator_impl_Instance.aaxl2` – widać dwa panele piętrowe, czujnik drzwi i pełną siatkę połączeń.*
 
