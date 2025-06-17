@@ -1,5 +1,6 @@
 # Winda ― system sterowania jednokabinową windą z autoryzacją pięter  
 *(projekt AADL / OSATE)*
+### Autor: Maciej Brzeżawski
 
 ---
 
