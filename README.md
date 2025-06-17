@@ -42,17 +42,6 @@ Najważniejsze wymagania funkcjonalne i sposób ich realizacji:
 |13 | **thread** | `Safety_Thread` | obsługa alarmu |
 
 ---
-## 2. Typy danych użyte w modelu
-
-| Typ (`Base_Types`) | Gdzie stosowany | Zakres / rozmiar |
-|--------------------|-----------------|------------------|
-| `Unsigned_8`  | `cabin_req`, `authorised_fl`, `target_floor`, `log_msg` | 0 … 255 (1 B) |
-| `Unsigned_32` | `user_id` | 0 … 4 294 967 295 (4 B) |
-| `Boolean`     | `auth_status` | TRUE / FALSE |
-| **`event` (bez ładunku)** | `floor_up`, `floor_down`, `door_closed`, `alarm_btn` | sygnał impulsowy |
-| **`data CallQueue`** | współdzielona kolejka zleceń (mutex + Priority Inheritance) | struktura abstrakcyjna (rozszerzalna) |
-
----
 
 ## 3. Architektura sprzętowa  
 
